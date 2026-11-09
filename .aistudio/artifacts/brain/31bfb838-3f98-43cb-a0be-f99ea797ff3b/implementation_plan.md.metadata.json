@@ -1,0 +1,6 @@
+{
+  "summary":  "Architectural blueprint and implementation plan for HishabKhata & BillBook: an offline-first retail inventory, billing, dual-entry ledger (TallyKhata), multi-format thermal/A4 printing, bKash/WhatsApp sharing, and bilingual Bengali/English voice assistant app with Firebase Firestore cloud sync.",
+  "updatedAt":  "2026-11-09T09:31:19.417478891Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

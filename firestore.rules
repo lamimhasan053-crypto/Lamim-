@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasValidTimestamps() {
+      return request.resource.data.createdAt is timestamp &&
+             request.resource.data.updatedAt is timestamp;
+    }
+
+    // Root user document
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) &&
+                              request.resource.data.userId == userId &&
+                              request.resource.data.shopName is string &&
+                              hasValidTimestamps();
+      allow delete: if isOwner(userId);
+
+      // Products subcollection
+      match /products/{productId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+                                request.resource.data.userId == userId &&
+                                request.resource.data.name is string &&
+                                request.resource.data.purchasePrice is number &&
+                                request.resource.data.sellingPrice is number &&
+                                request.resource.data.stockQty is number &&
+                                request.resource.data.unit is string &&
+                                hasValidTimestamps();
+        allow delete: if isOwner(userId);
+      }
+
+      // Contacts subcollection (Customers & Suppliers)
+      match /contacts/{contactId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+                                request.resource.data.userId == userId &&
+                                request.resource.data.name is string &&
+                                request.resource.data.type in ['CUSTOMER', 'SUPPLIER'] &&
+                                request.resource.data.currentBalance is number &&
+                                hasValidTimestamps();
+        allow delete: if isOwner(userId);
+      }
+
+      // Invoices subcollection
+      match /invoices/{invoiceId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+                                request.resource.data.userId == userId &&
+                                request.resource.data.invoiceNumber is string &&
+                                request.resource.data.items is list &&
+                                request.resource.data.totalAmount is number &&
+                                request.resource.data.paidAmount is number &&
+                                request.resource.data.dueAmount is number &&
+                                hasValidTimestamps();
+        allow delete: if isOwner(userId);
+      }
+
+      // Ledger entries subcollection (Dena / Paona)
+      match /ledger/{ledgerId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+                                request.resource.data.userId == userId &&
+                                request.resource.data.contactId is string &&
+                                request.resource.data.type in ['GAVE', 'GOT'] &&
+                                request.resource.data.amount is number &&
+                                hasValidTimestamps();
+        allow delete: if isOwner(userId);
+      }
+
+      // Voice shortcuts subcollection
+      match /shortcuts/{shortcutId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+                                request.resource.data.userId == userId &&
+                                request.resource.data.triggerWord is string &&
+                                request.resource.data.targetProductName is string &&
+                                request.resource.data.defaultQuantity is number &&
+                                request.resource.data.defaultPrice is number &&
+                                hasValidTimestamps();
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

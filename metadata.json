@@ -1,0 +1,8 @@
+{
+  "name": "Remix BizFlow AI Assistant",
+  "description": "All-in-one billing, stock, and voice-automated accounting app with Google Workspace integration and secure offline encryption.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
